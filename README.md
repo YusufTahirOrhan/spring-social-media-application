@@ -1,12 +1,12 @@
 # Spring Boot Task -- Mini Instagram
 
-Bu proje, teknik bir değerlendirme kapsamında geliştirilmiş küçük bir sosyal medya servisidir. Spring Security **kullanılmadan**, manuel bir kimlik doğrulama mekanizması üzerine inşa edilmiştir.
+Bu proje, teknik bir değerlendirme kapsamında geliştirilmiş küçük bir sosyal medya servisidir. Spring Security kullanılmadan, manuel bir kimlik doğrulama mekanizması üzerine inşa edilmiştir.
 
 Kimlik doğrulama, "Opaque Access Token" (veritabanında SHA-256 hash'i olarak saklanan, zaman aşımına uğrayan ve `logout` ile iptal edilebilen) yöntemiyle sağlanmaktadır. Sistem `ADMIN` ve `USER` olmak üzere iki rol içerir.
 
 ---
 
-## 🔧 Kullanılan Teknolojiler (Stack)
+## Kullanılan Teknolojiler (Stack)
 
 * **Java:** 17+ (Bu proje JDK 25 ile derlenmiştir)
 * **Framework:** Spring Boot 3+ (Spring Web, Spring Data JPA)
@@ -18,7 +18,7 @@ Kimlik doğrulama, "Opaque Access Token" (veritabanında SHA-256 hash'i olarak s
 
 ---
 
-## 📁 Proje Yapısı (Özet)
+## Proje Yapısı
 
 ```text
 src/main/java/com/example/social
@@ -39,12 +39,12 @@ src/main/java/com/example/social
 
 ---
 
-## 🚀 Hızlı Başlangıç
+## Hızlı Başlangıç
 
 ### 1. Gereksinimler
 
 * JDK 25
-* Lokal PostgreSQL 18+
+* PostgreSQL 18+
 * Maven 4.0.0
 
 ### 2. PostgreSQL Kurulumu
@@ -58,7 +58,7 @@ CREATE USER social_user WITH ENCRYPTED PASSWORD 'social_pass';
 GRANT ALL PRIVILEGES ON DATABASE social_db TO social_user;
 ```
 
-3. Konfigürasyon
+### 3. Konfigürasyon
 Projenin src/main/resources/application.properties dosyasını kendi lokal ayarlarınıza göre düzenleyin.
 
 Örnek application.properties:
@@ -85,10 +85,10 @@ spring.servlet.multipart.max-file-size=5MB
 spring.servlet.multipart.max-request-size=5MB
 ```
 
-4. Çalıştırma
+### 4. Çalıştırma
 Uygulama, Maven kullanılarak terminalden çalıştırılabilir:
 
-# Projeyi derle, paketle ve çalıştır
+## Projeyi derleme, paketleme ve çalıştırma
 ```
 mvn clean package && java -jar target/social-0.0.1-SNAPSHOT.jar
 ```
@@ -96,20 +96,20 @@ Veya IntelliJ IDEA üzerinden SocialApplication.java'yı çalıştırın.
 
 Uygulama ilk kez başladığında, Flyway (V1__init_schema.sql) otomatik olarak veritabanı şemasını (tüm tabloları) kuracak ve AdminSeeder (bootstrap/AdminSeeder.java) app.admin ayarlarını kullanarak ADMIN kullanıcısını oluşturacaktır.
 
-## 🔐 Kimlik Doğrulama (Opaque Token)
+## Kimlik Doğrulama (Opaque Token)
 Spring Security kullanılmadan, Filter ve ThreadLocal tabanlı özel bir kimlik doğrulama mekanizması kurulmuştur.
 
-Signup: Kullanıcı adı benzersizdir. Şifre, BCrypt ile hash'lenerek veritabanına kaydedilir.
+**Signup:** Kullanıcı adı benzersizdir. Şifre, BCrypt ile hash'lenerek veritabanına kaydedilir.
 
-Login: Rastgele 32-byte (256-bit) güvenli bir token üretilir. Bu token'ın Base64URL formatlı ham hali (raw) istemciye accessToken olarak döndürülür. Token'ın SHA-256 hash'i ise expires_at (son kullanma tarihi) ile birlikte tokens tablosuna kaydedilir.
+**Login:** Rastgele 32-byte (256-bit) güvenli bir token üretilir. Bu token'ın Base64URL formatlı ham hali (raw) istemciye accessToken olarak döndürülür. Token'ın SHA-256 hash'i ise expires_at (son kullanma tarihi) ile birlikte tokens tablosuna kaydedilir.
 
-Yetkilendirme: Korumalı endpoint'lere gelen her istekte Authorization: Bearer <token> başlığı beklenir. AuthFilter, bu raw token'ı alır, SHA-256 hash'ini hesaplar ve veritabanında bu hash'e sahip, süresi dolmamış (expires_at) ve iptal edilmemiş (revoked_at == null) bir token arar. Bulursa, kullanıcıyı CurrentUserHolder'a (ThreadLocal) atar.
+**Yetkilendirme:** Korumalı endpoint'lere gelen her istekte Authorization: Bearer <token> başlığı beklenir. AuthFilter, bu raw token'ı alır, SHA-256 hash'ini hesaplar ve veritabanında bu hash'e sahip, süresi dolmamış (expires_at) ve iptal edilmemiş (revoked_at == null) bir token arar. Bulursa, kullanıcıyı CurrentUserHolder'a (ThreadLocal) atar.
 
-Logout: İlgili token'ın revoked_at alanını Instant.now() olarak güncelleyerek token'ı anında geçersiz kılar.
+**Logout:** İlgili token'ın revoked_at alanını Instant.now() olarak güncelleyerek token'ı anında geçersiz kılar.
 
-Güvenlik Notu: Veritabanında token'ın ham hali (raw) asla saklanmaz. Sadece geri döndürülemez hash'i saklanır.
+**Güvenlik Notu:** Veritabanında token'ın ham hali (raw) asla saklanmaz. Sadece geri döndürülemez hash'i saklanır.
 
-## 🧪 Hata Yanıtları (Tutarlı Format)
+## Hata Yanıtları
 Case study gereği, tüm hata yanıtları (4xx ve 5xx) standart ve tutarlı bir JSON formatı döndürür. Bu, GlobalExceptionHandler ve ApiError sınıfları ile yönetilir.
 
 Örnek Hata Yanıtı (404):
@@ -126,15 +126,15 @@ Case study gereği, tüm hata yanıtları (4xx ve 5xx) standart ve tutarlı bir 
 ```
 timestamp: Hatanın oluştuğu an (ISO-8601).
 
-path: İsteğin yapıldığı API yolu.
+**path:** İsteğin yapıldığı API yolu.
 
-status: HTTP statü kodu (örn: 400, 401, 403, 404).
+**status:** HTTP statü kodu (örn: 400, 401, 403, 404).
 
-code: Hatayı programatik olarak tanımlayan kod (örn: NOT_FOUND, UNAUTHORIZED, BAD_REQUEST).
+**code:** Hatayı programatik olarak tanımlayan kod (örn: NOT_FOUND, UNAUTHORIZED, BAD_REQUEST).
 
-message: Geliştiriciye yönelik, hatayı açıklayan net bir mesaj.
+**message:** Geliştiriciye yönelik, hatayı açıklayan net bir mesaj.
 
-## 📡 API Sözleşmesi (Özet)
+## API'lar
 Tüm korumalı uç noktalar Authorization: Bearer {{accessToken}} başlığını gerektirir.
 
 AUTH
@@ -239,7 +239,7 @@ DELETE /api/posts/{id}/likes
 ```
 Beğeniyi geri alır. 204 No Content döner.
 
-## 🖼️ Dosya Yükleme (Resimler)
+## Dosya Yükleme (Resimler)
 Yüklemeler, proje kök dizininde (working directory) oluşturulan uploads/ klasörüne kaydedilir.
 
 WebConfig.java, bu klasörü /files/** URL'i altında web'e sunar.
@@ -248,13 +248,13 @@ Dosyalar, güvenlik ve çakışmaları önlemek için UUID ile yeniden adlandır
 
 image_path olarak veritabanına FileStorageService tarafından üretilen tam URL yolu (örn: /files/2025-11/uuid.png) kaydedilir.
 
-## ✅ Varsayımlar & Kısıtlamalar
-Opaque Token: Case study "DB'de aktif olarak saklanır" ve "logout ile sonlandırılır" dediği için, stateless JWT yerine veritabanı destekli stateful (durumlu) Opaque Token mimarisi tercih edilmiştir.
+## Varsayımlar & Kısıtlamalar
+**Opaque Token:** Case study "DB'de aktif olarak saklanır" ve "logout ile sonlandırılır" denildiği için, stateless JWT yerine veritabanı destekli stateful (durumlu) Opaque Token mimarisi tercih edilmiştir.
 
-Soft Delete: Veri bütünlüğünü korumak (örn: bir kullanıcı silinse bile eski yorumlarının 'Bilinmeyen Kullanıcı' olarak kalabilmesi) ve geri almayı kolaylaştırmak için User, Post ve Comment silme işlemleri deleted=true bayrağı ile "soft delete" olarak uygulanmıştır. Bu yaklaşım, veritabanı seviyesinde fiziksel silme (DELETE FROM ...) ve ON DELETE CASCADE kurallarını kullanmaya bilinçli olarak tercih edilmiştir. Çünkü fiziksel silme (hard delete), denetim (auditing) ve geri alma imkanını ortadan kaldırır.
+**Soft Delete:** Veri bütünlüğünü korumak (örn: bir kullanıcı silinse bile eski yorumlarının 'Bilinmeyen Kullanıcı' olarak kalabilmesi) ve geri almayı kolaylaştırmak için User, Post ve Comment silme işlemleri deleted=true bayrağı ile "soft delete" olarak uygulanmıştır. Bu yaklaşım, veritabanı seviyesinde fiziksel silme (DELETE FROM ...) ve ON DELETE CASCADE kurallarını kullanmaya bilinçli olarak tercih edilmiştir. Çünkü fiziksel silme (hard delete), denetim (auditing) ve geri alma imkanını ortadan kaldırır.
 
-Mapping: DTO (record) ve Entity (@Entity) dönüşümleri, projenin basitliği nedeniyle MapStruct gibi bir kütüphane olmadan, manuel olarak yapılmıştır.
+**Mapping:** DTO (record) ve Entity (@Entity) dönüşümleri, projenin basitliği nedeniyle MapStruct gibi bir kütüphane olmadan, manuel olarak yapılmıştır.
 
-Dosya Temizliği: Post güncellendiğinde veya silindiğinde, uploads/ klasöründeki eski/yetim kalan resim dosyaları silinmez. Bu, basitlik için alınmış bir karardır (Gerçek bir uygulamada bu işlem bir "garbage collector" veya CDN lifecycle kuralı ile yönetilmelidir).
+**Dosya Temizliği:** Post güncellendiğinde veya silindiğinde, `uploads/` klasöründeki eski/yetim kalan resim dosyaları *silinmez*. Bu işlem, genellikle asenkron bir 'çöp toplama' (garbage collection) işi olarak ele alındığı için **bu servisin mevcut kapsamı dışında bırakılmıştır** (Gerçek bir uygulamada bu işlem bir 'garbage collector' veya CDN lifecycle kuralı ile yönetilmelidir).
 
-Limitler: Güvenlik için application.properties'de 5MB dosya yükleme limiti belirlenmiştir, ancak API "rate limiting" (örn: brute-force login denemelerini engelleme) içermemektedir.
+**Limitler:** Güvenlik için application.properties'de 5MB dosya yükleme limiti belirlenmiştir, ancak API "rate limiting" (örn: brute-force login denemelerini engelleme) içermemektedir. Bu, ikinci bir fazda Redis tabanlı bir sayaç mekanizması ile eklenebilir.
