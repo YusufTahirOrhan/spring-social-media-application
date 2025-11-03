@@ -88,10 +88,10 @@ spring.servlet.multipart.max-request-size=5MB
 4. Çalıştırma
 Uygulama, Maven kullanılarak terminalden çalıştırılabilir:
 
-Bash
-
 # Projeyi derle, paketle ve çalıştır
+```
 mvn clean package && java -jar target/social-0.0.1-SNAPSHOT.jar
+```
 Veya IntelliJ IDEA üzerinden SocialApplication.java'yı çalıştırın.
 
 Uygulama ilk kez başladığında, Flyway (V1__init_schema.sql) otomatik olarak veritabanı şemasını (tüm tabloları) kuracak ve AdminSeeder (bootstrap/AdminSeeder.java) app.admin ayarlarını kullanarak ADMIN kullanıcısını oluşturacaktır.
@@ -138,98 +138,105 @@ message: Geliştiriciye yönelik, hatayı açıklayan net bir mesaj.
 Tüm korumalı uç noktalar Authorization: Bearer {{accessToken}} başlığını gerektirir.
 
 AUTH
+```
 POST /api/auth/signup (Body: {username, password})
-
+```
 Yeni kullanıcı kaydı (rol varsayılan olarak USER).
-
+```
 POST /api/auth/login (Body: {username, password})
-
+```
 Başarılı girişte 200 OK ve token döner:
 
-JSON
+```JSON
 
 {
   "accessToken": "...",
   "expiresInSeconds": 3600
 }
+```
+```
 POST /api/auth/logout
-
+```
 Aktif token'ı revoked_at olarak işaretleyerek geçersiz kılar.
-
+```
 GET /api/auth/me
-
+```
 Aktif kullanıcının {id, username, role} bilgilerini döner.
 
 USERS
+```
 GET /api/users/{id}
-
+```
 Tekil kullanıcı profilini döner (Silinmiş kullanıcılar 404 döner).
-
+```
 PUT /api/users/me/password (Body: {currentPassword, newPassword})
-
+```
 Aktif kullanıcının şifresini günceller. Mevcut şifre doğrulaması yapılır.
 
 Güvenlik: Başarılı olursa, o kullanıcıya ait tüm aktif token'ları iptal eder (tüm cihazlardan çıkış yapılır).
-
+```
 DELETE /api/users/me
-
+```
 Aktif kullanıcının hesabını "soft delete" (geri alınabilir silme) yapar.
 
 Güvenlik: Kullanıcının tüm aktif token'larını iptal eder.
-
+```
 DELETE /api/admin/users/{id} (Sadece ADMIN rolü)
-
+```
 Belirtilen ID'ye sahip kullanıcıyı "soft delete" yapar ve tüm token'larını iptal eder.
 
 POSTS
+```
 POST /api/posts (Tip: multipart/form-data)
-
+```
 Body: image (Dosya) ve description (Metin, opsiyonel).
 
 201 Created yanıtı döner.
-
+```
 GET /api/posts/{id}
-
+```
 Post detaylarını (yazar, sayaçlar ve yorum listesi dahil) döner.
-
+```
 PUT /api/posts/{id} (Tip: multipart/form-data) (Sadece sahibi veya ADMIN)
-
+```
 Body: image (Dosya, opsiyonel) ve description (Metin, opsiyonel).
 
 Postun resmini ve/veya açıklamasını günceller.
-
+```
 DELETE /api/posts/{id} (Sadece sahibi veya ADMIN)
-
+```
 Postu "soft delete" yapar. 204 No Content döner.
-
+```
 POST /api/posts/{id}/view
-
+```
 Postun view_count sayacını +1 artırır.
-
+```
 GET /api/posts
-
+```
 Tüm aktif postları listeler (yorumlar hariç).
 
 COMMENTS
+```
 POST /api/posts/{id}/comments (Body: {content})
-
+```
 İlgili posta yorum ekler.
-
+```
 GET /api/posts/{id}/comments
-
+```
 İlgili postun yorumlarını listeler.
-
+```
 DELETE /api/comments/{commentId} (Sadece yorum sahibi, post sahibi veya ADMIN)
-
+```
 Yorumu "soft delete" yapar. 204 No Content döner.
 
 LIKES
+```
 POST /api/posts/{id}/likes
-
+```
 Postu beğenir (Kullanıcı başına tek beğeni, idempotent).
-
+```
 DELETE /api/posts/{id}/likes
-
+```
 Beğeniyi geri alır. 204 No Content döner.
 
 🖼️ Dosya Yükleme (Resimler)
