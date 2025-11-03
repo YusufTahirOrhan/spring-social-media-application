@@ -20,8 +20,22 @@ Kimlik doğrulama, "Opaque Access Token" (veritabanında SHA-256 hash'i olarak s
 
 ## 📁 Proje Yapısı (Özet)
 
-src/main/java/com/example/social ├─ SocialApplication.java ├─ config/ # AppProperties, WebConfig (resimler için) ├─ domain/ │ ├─ Role.java # Enum (ADMIN, USER) │ └─ entity/ # User, Token, Post, Comment, Like ├─ repository/ # UserRepository, TokenRepository, PostRepository vb. ├─ bootstrap/ # AdminSeeder (Başlangıçta admin kullanıcısı oluşturur) ├─ security/ # AuthFilter, CurrentUser(Holder), TokenUtils ├─ service/ # AuthService, UserService, PostService, FileStorageService └─ web/ ├─ controller/ # AuthController, UserController, PostController ├─ dto/ # AuthDTOs, UserDTOs, PostDTOs └─ exception/ # ApiError, GlobalExceptionHandler, Özel Hata Sınıfları
-
+```text
+src/main/java/com/example/social
+├─ SocialApplication.java
+├─ config/            # AppProperties, WebConfig (resimler için)
+├─ domain/
+│  ├─ Role.java       # Enum (ADMIN, USER)
+│  └─ entity/        # User, Token, Post, Comment, Like
+├─ repository/        # UserRepository, TokenRepository, PostRepository vb.
+├─ bootstrap/         # AdminSeeder (Başlangıçta admin kullanıcısı oluşturur)
+├─ security/          # AuthFilter, CurrentUser(Holder), TokenUtils
+├─ service/           # AuthService, UserService, PostService, FileStorageService
+└─ web/
+   ├─ controller/     # AuthController, UserController, PostController
+   ├─ dto/            # AuthDTOs, UserDTOs, PostDTOs
+   └─ exception/      # ApiError, GlobalExceptionHandler, Özel Hata Sınıfları
+```
 
 ---
 
@@ -42,13 +56,14 @@ Lokal PostgreSQL sunucunuzda, `application.properties` dosyanızla eşleşen bir
 CREATE DATABASE social_db;
 CREATE USER social_user WITH ENCRYPTED PASSWORD 'social_pass';
 GRANT ALL PRIVILEGES ON DATABASE social_db TO social_user;
+```
+
 3. Konfigürasyon
 Projenin src/main/resources/application.properties dosyasını kendi lokal ayarlarınıza göre düzenleyin.
 
 Örnek application.properties:
 
-Properties
-
+```properties
 server.port=8080
 spring.application.name=social
 # DATABASE CONFIGURATION
@@ -68,6 +83,8 @@ spring.flyway.locations=classpath:db/migration
 
 spring.servlet.multipart.max-file-size=5MB
 spring.servlet.multipart.max-request-size=5MB
+```
+
 4. Çalıştırma
 Uygulama, Maven kullanılarak terminalden çalıştırılabilir:
 
@@ -97,7 +114,7 @@ Case study gereği, tüm hata yanıtları (4xx ve 5xx) standart ve tutarlı bir 
 
 Örnek Hata Yanıtı (404):
 
-JSON
+```JSON
 
 {
   "timestamp": "2025-11-03T03:15:00.123Z",
@@ -106,6 +123,7 @@ JSON
   "code": "NOT_FOUND",
   "message": "User not found"
 }
+```
 timestamp: Hatanın oluştuğu an (ISO-8601).
 
 path: İsteğin yapıldığı API yolu.
