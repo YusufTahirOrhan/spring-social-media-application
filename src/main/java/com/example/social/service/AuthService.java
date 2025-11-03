@@ -10,8 +10,8 @@ import com.example.social.domain.repository.UserRepository;
 import com.example.social.security.CurrentUser;
 import com.example.social.security.CurrentUserHolder;
 import com.example.social.security.TokenUtils;
-import com.example.social.web.NotFoundException;
-import com.example.social.web.UnauthorizedException;
+import com.example.social.web.exception.NotFoundException;
+import com.example.social.web.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,43 +33,43 @@ public class AuthService {
             throw new IllegalArgumentException("Username already exists!");
         });
         String hash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
-        var u = User.builder()
+        var user = User.builder()
                 .username(username)
                 .passwordHash(hash)
                 .role(Role.USER)
                 .deleted(false)
                 .createdAt(Instant.now())
                 .build();
-        users.save(u);
+        users.save(user);
     }
 
     @Transactional
     public LoginResult login(String username, String password, String userAgent, String ip){
-        var u = users.findUserByUsername(username)
+        var user = users.findUserByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found!"));
-        var res = BCrypt.verifyer().verify(password.toCharArray(), u.getPasswordHash());
+        var result = BCrypt.verifyer().verify(password.toCharArray(), user.getPasswordHash());
 
-        if (!res.verified){
+        if (!result.verified){
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        int len = props.getAuth().getToken().getLengthBytes();
-        byte[] raw = TokenUtils.randomBytes(len);
+        int lengthBytes = props.getAuth().getToken().getLengthBytes();
+        byte[] raw = TokenUtils.randomBytes(lengthBytes);
         String rawEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
         String hash = TokenUtils.sha256Hex(raw);
 
         Instant now = Instant.now();
         Instant exp = now.plus(props.getAuth().getToken().getTtlMinutes(), ChronoUnit.MINUTES);
 
-        var t = Token.builder()
-                .user(u)
+        var token = Token.builder()
+                .user(user)
                 .tokenHash(hash)
                 .issuedAt(now)
                 .expiresAt(exp)
                 .userAgent(userAgent)
                 .ipAddress(ip)
                 .build();
-        tokens.save(t);
+        tokens.save(token);
 
         long expiresIn = ChronoUnit.SECONDS.between(now, exp);
         return new LoginResult(rawEncoded, expiresIn);
@@ -82,9 +82,9 @@ public class AuthService {
         }
 
         String hash = TokenUtils.sha256Hex(bearerRaw.getBytes());
-        tokens.findByTokenHashAndRevokedAtIsNull(hash).ifPresent(tok -> {
-            tok.setRevokedAt(Instant.now());
-            tokens.save(tok);
+        tokens.findByTokenHashAndRevokedAtIsNull(hash).ifPresent(token -> {
+            token.setRevokedAt(Instant.now());
+            tokens.save(token);
                 });
     }
 

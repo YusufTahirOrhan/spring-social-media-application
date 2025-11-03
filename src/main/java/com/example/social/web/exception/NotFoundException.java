@@ -1,4 +1,4 @@
-package com.example.social.web;
+package com.example.social.web.exception;
 
 public class NotFoundException  extends RuntimeException{
     public NotFoundException(String m) {

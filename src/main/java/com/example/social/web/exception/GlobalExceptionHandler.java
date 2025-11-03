@@ -1,4 +1,4 @@
-package com.example.social.web;
+package com.example.social.web.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
