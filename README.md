@@ -96,7 +96,7 @@ Veya IntelliJ IDEA üzerinden SocialApplication.java'yı çalıştırın.
 
 Uygulama ilk kez başladığında, Flyway (V1__init_schema.sql) otomatik olarak veritabanı şemasını (tüm tabloları) kuracak ve AdminSeeder (bootstrap/AdminSeeder.java) app.admin ayarlarını kullanarak ADMIN kullanıcısını oluşturacaktır.
 
-🔐 Kimlik Doğrulama (Opaque Token)
+## 🔐 Kimlik Doğrulama (Opaque Token)
 Spring Security kullanılmadan, Filter ve ThreadLocal tabanlı özel bir kimlik doğrulama mekanizması kurulmuştur.
 
 Signup: Kullanıcı adı benzersizdir. Şifre, BCrypt ile hash'lenerek veritabanına kaydedilir.
@@ -109,7 +109,7 @@ Logout: İlgili token'ın revoked_at alanını Instant.now() olarak güncelleyer
 
 Güvenlik Notu: Veritabanında token'ın ham hali (raw) asla saklanmaz. Sadece geri döndürülemez hash'i saklanır.
 
-🧪 Hata Yanıtları (Tutarlı Format)
+## 🧪 Hata Yanıtları (Tutarlı Format)
 Case study gereği, tüm hata yanıtları (4xx ve 5xx) standart ve tutarlı bir JSON formatı döndürür. Bu, GlobalExceptionHandler ve ApiError sınıfları ile yönetilir.
 
 Örnek Hata Yanıtı (404):
@@ -134,7 +134,7 @@ code: Hatayı programatik olarak tanımlayan kod (örn: NOT_FOUND, UNAUTHORIZED,
 
 message: Geliştiriciye yönelik, hatayı açıklayan net bir mesaj.
 
-📡 API Sözleşmesi (Özet)
+## 📡 API Sözleşmesi (Özet)
 Tüm korumalı uç noktalar Authorization: Bearer {{accessToken}} başlığını gerektirir.
 
 AUTH
@@ -239,7 +239,7 @@ DELETE /api/posts/{id}/likes
 ```
 Beğeniyi geri alır. 204 No Content döner.
 
-🖼️ Dosya Yükleme (Resimler)
+## 🖼️ Dosya Yükleme (Resimler)
 Yüklemeler, proje kök dizininde (working directory) oluşturulan uploads/ klasörüne kaydedilir.
 
 WebConfig.java, bu klasörü /files/** URL'i altında web'e sunar.
@@ -248,7 +248,7 @@ Dosyalar, güvenlik ve çakışmaları önlemek için UUID ile yeniden adlandır
 
 image_path olarak veritabanına FileStorageService tarafından üretilen tam URL yolu (örn: /files/2025-11/uuid.png) kaydedilir.
 
-✅ Varsayımlar & Kısıtlamalar
+## ✅ Varsayımlar & Kısıtlamalar
 Opaque Token: Case study "DB'de aktif olarak saklanır" ve "logout ile sonlandırılır" dediği için, stateless JWT yerine veritabanı destekli stateful (durumlu) Opaque Token mimarisi tercih edilmiştir.
 
 Soft Delete: Veri bütünlüğünü korumak (örn: bir kullanıcı silinse bile eski yorumlarının 'Bilinmeyen Kullanıcı' olarak kalabilmesi) ve geri almayı kolaylaştırmak için User, Post ve Comment silme işlemleri deleted=true bayrağı ile "soft delete" olarak uygulanmıştır. Bu yaklaşım, veritabanı seviyesinde fiziksel silme (DELETE FROM ...) ve ON DELETE CASCADE kurallarını kullanmaya bilinçli olarak tercih edilmiştir. Çünkü fiziksel silme (hard delete), denetim (auditing) ve geri alma imkanını ortadan kaldırır.
