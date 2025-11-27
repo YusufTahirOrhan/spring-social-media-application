@@ -27,7 +27,12 @@ services:
       - elasticsearch
     networks:
       - elastic_stack
-
+      
+  redis:
+      image: redis:alpine
+      ports:
+        - "6379:6379"
+      container_name: redis-local
 volumes:
   es_data:
 

@@ -45,10 +45,13 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
+
+        <!-- Elasticsearch for logging -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
+
         <!-- Validation (DTO @Valid) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,6 +94,11 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
         <!-- Test -->
 		<dependency>

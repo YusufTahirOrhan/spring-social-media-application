@@ -32,6 +32,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "NOT_FOUND", e.getMessage(), request);
     }
 
+    @ExceptionHandler({TooManyRequestsException.class})
+    public ResponseEntity<ApiError> tooManyRequests(Exception e, HttpServletRequest request) {
+        return build(HttpStatus.TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", e.getMessage(), request);
+    }
+
     private ResponseEntity<ApiError> build(HttpStatus status, String code, String message, HttpServletRequest request) {
         var body = ApiError.builder()
                 .timestamp(Instant.now())
