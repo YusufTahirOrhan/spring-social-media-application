@@ -22,7 +22,7 @@ public class LogFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        ContentCachingRequestWrapper  requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) servletRequest);
+        ContentCachingRequestWrapper  requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) servletRequest,8192);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) servletResponse);
 
         long startTime = System.currentTimeMillis();
