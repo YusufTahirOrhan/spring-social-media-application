@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+  # --- ELASTIC STACK (Version 9.2.2) ---
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.2.2
     container_name: es_local
@@ -27,14 +28,80 @@ services:
       - elasticsearch
     networks:
       - elastic_stack
-      
+
   redis:
-      image: redis:alpine
-      ports:
-        - "6379:6379"
-      container_name: redis-local
+    image: redis:alpine
+    container_name: redis-local
+    ports:
+      - "6379:6379"
+    networks:
+      - elastic_stack
+
+  # --- CLICKHOUSE ---
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse_local
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      - CLICKHOUSE_DB=default
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=123456
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - elastic_stack
+
+  # --- CLICKVISUAL ---
+  clickvisual:
+    image: clickvisual/clickvisual:latest
+    container_name: clickvisual_local
+    ports:
+      - "19001:19001"
+    environment:
+      - EGO_LOG_WRITER=stderr
+      - DB_HOST=clickvisual_mysql
+      - DB_PORT=3306
+      - DB_USER=clickvisual
+      - DB_PWD=clickvisual_secret
+      - DB_NAME=clickvisual
+    depends_on:
+      clickvisual_mysql:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+    networks:
+      - elastic_stack
+
+  # --- CLICKVISUAL DB (MariaDB - ARM64 Uyumlu) ---
+  clickvisual_mysql:
+    image: mariadb:10.11
+    container_name: clickvisual_mysql_local
+    environment:
+      - MARIADB_DATABASE=clickvisual
+      - MARIADB_USER=clickvisual
+      - MARIADB_PASSWORD=clickvisual_secret
+      - MARIADB_ROOT_PASSWORD=root_secret
+    volumes:
+      - clickvisual_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - elastic_stack
+
 volumes:
   es_data:
+  clickhouse_data:
+  clickvisual_db_data:
 
 networks:
   elastic_stack:

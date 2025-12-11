@@ -2,10 +2,12 @@ package com.example.social.security;
 
 import com.example.social.domain.entity.ApiLog;
 import com.example.social.domain.repository.ApiLogRepository;
+import com.example.social.domain.repository.ClickHouseLogRepository; // Yeni eklenen
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j; // Loglama için eklendi (Opsiyonel)
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -13,12 +15,15 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LogFilter implements Filter {
 
     private final ApiLogRepository apiLogRepository;
+    private final ClickHouseLogRepository clickHouseLogRepository;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -44,7 +49,10 @@ public class LogFilter implements Filter {
                     ? requestWrapper.getUserPrincipal().getName()
                     : "Anonymous";
 
+            String logId = UUID.randomUUID().toString();
+
             ApiLog log = ApiLog.builder()
+                    .id(logId)
                     .timestamp(Instant.now())
                     .httpMethod(requestWrapper.getMethod())
                     .path(requestWrapper.getRequestURI())
@@ -60,6 +68,12 @@ public class LogFilter implements Filter {
                     .build();
 
             apiLogRepository.save(log);
+
+            try {
+                clickHouseLogRepository.save(log);
+            } catch (Exception e) {
+                System.err.println("ClickHouse Logging Error: " + e.getCause().getMessage());
+            }
 
             responseWrapper.copyBodyToResponse();
         }
