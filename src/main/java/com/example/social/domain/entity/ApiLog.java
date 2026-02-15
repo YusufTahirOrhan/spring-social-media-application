@@ -56,8 +56,6 @@ public class ApiLog {
 
     @Field(type = FieldType.Text)
     private String userAgent;
-
-
 }
 
 
